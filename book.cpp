@@ -1,6 +1,7 @@
 #include "book.h"
 #include "util.h"
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 
 using namespace std;
@@ -29,12 +30,13 @@ set<string> Book::keywords() const
 
 string Book::displayString() const
 {
-     return category_ + " "
-          + name_+ " "
-          + to_string(price_) + " "
-          + to_string(qty_) + " "
-          + ISBN_ + " "
-          + author_;
+     ostringstream precisionFixer;
+     precisionFixer << fixed;
+     precisionFixer << std::setprecision(2);
+     precisionFixer << price_;
+     return name_
+          + "\nAuthor: " + author_ + " ISBN: " + ISBN_
+          + "\n" + precisionFixer.str() + " " + to_string(qty_);
 }
 
 void Book::dump(ostream& os) const

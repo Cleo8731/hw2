@@ -1,6 +1,7 @@
 #include "clothing.h"
 #include "util.h"
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 
 using namespace std;
@@ -28,12 +29,13 @@ set<string> Clothing::keywords() const
 
 string Clothing::displayString() const
 {
-     return category_ + " "
-          + name_+ " "
-          + to_string(price_) + " "
-          + to_string(qty_) + " "
-          + size_ + " "
-          + brand_;
+     ostringstream precisionFixer;
+     precisionFixer << fixed;
+     precisionFixer << std::setprecision(2);
+     precisionFixer << price_;
+     return name_
+          + "\nSize: " + size_ + " Brand: " + brand_
+          + "\n" + precisionFixer.str() + " " + to_string(qty_);
 }
 
 void Clothing::dump(ostream& os) const

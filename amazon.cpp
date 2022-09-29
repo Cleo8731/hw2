@@ -9,6 +9,7 @@
 #include "db_parser.h"
 #include "product_parser.h"
 #include "util.h"
+#include "mydatastore.h"
 
 using namespace std;
 struct ProdNameSorter {
@@ -29,7 +30,7 @@ int main(int argc, char* argv[])
      * Declare your derived DataStore object here replacing
      *  DataStore type to your derived type
      ****************/
-    DataStore ds;
+    MyDataStore ds = MyDataStore();
 
 
 
@@ -50,6 +51,7 @@ int main(int argc, char* argv[])
         cerr << "Error parsing!" << endl;
         return 1;
     }
+    //ds.dump(cout);
 
     cout << "=====================================" << endl;
     cout << "Menu: " << endl;
@@ -70,7 +72,7 @@ int main(int argc, char* argv[])
         stringstream ss(line);
         string cmd;
         if((ss >> cmd)) {
-            if( cmd == "AND") {
+            if ( cmd == "AND" ) {
                 string term;
                 vector<string> terms;
                 while(ss >> term) {
@@ -90,7 +92,7 @@ int main(int argc, char* argv[])
                 hits = ds.search(terms, 1);
                 displayProducts(hits);
             }
-            else if ( cmd == "QUIT") {
+            else if ( cmd == "QUIT" ) {
                 string filename;
                 if(ss >> filename) {
                     ofstream ofile(filename.c_str());
@@ -99,11 +101,43 @@ int main(int argc, char* argv[])
                 }
                 done = true;
             }
-	    /* Add support for other commands here */
-
-
-
-
+            else if ( cmd == "ADD" ) {
+                string username;
+                int hit_result_index;
+                if (ss >> username) {
+                    username = convToLower(username);
+                } else {
+                    cerr << "Invalid request\n";
+                }
+                if (ss >> hit_result_index) {
+                    if (hit_result_index > (int) hits.size()) {
+                        cerr << "Invalid request\n";
+                    }
+                    else if (!ds.addToCart(username, hits[hit_result_index - 1])) {
+                        cerr << "Invalid request\n";
+                    }
+                } else {
+                    cerr << "Invalid request\n";
+                }
+            }
+            else if ( cmd == "VIEWCART" ) {
+                string username;
+                if (ss >> username) {
+                    username = convToLower(username);
+                    ds.printCart(username, cout);
+                } else {
+                    cerr << "Invalid username\n";
+                }
+            }
+            else if ( cmd == "BUYCART" ) {
+                string username;
+                if (ss >> username) {
+                    username = convToLower(username);
+                    cout << "Oops, this feature was not completed in time..." << endl;
+                } else {
+                    cerr << "Invalid username\n";
+                }
+            }
             else {
                 cout << "Unknown command" << endl;
             }
